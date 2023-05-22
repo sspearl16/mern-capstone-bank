@@ -1,0 +1,108 @@
+//require('dotenv').config();
+//const path = require('path');
+
+var express = require('express');
+var app = express();
+var cors = require('cors');
+var dal = require('./dal');
+
+app.use(express.static('public'));
+app.use(cors());
+
+app.get('/account/create/:name/:email/:password', function (req,res) {
+    dal.create(req.params.name, req.params.email, req.params.password)
+     .then((user) => {
+        console.log(user);
+        res.send(user);
+     });
+});
+
+app.get('/account/login/:email/:password', function (req,res) {
+    dal.login(req.params.email, req.params.password)
+     .then((user) => {
+        console.log(user);
+        res.send(user);
+     });
+});
+
+app.get('/account/logout/:email', function (req,res) {
+    dal.login(req.params.email, req.params.password)
+     .then((user) => {
+        console.log(user);
+        res.send(user);
+     })
+})
+
+app.get('/account/find/:email', function(req,res) {
+    dal.find(req.params.email)
+     .then((user) => {
+        console.log(user);
+        res.send(user);
+     });
+});
+
+app.get('/account/findOne/:email', function (req,res) {
+    dal.findOne(req.params.email)
+     .then((user) => {
+        console.log(user);
+        res.send(user);
+     });
+});
+
+app.get('/account/deposit/:email/:amount', function(req,res) {
+    dal.find(req.params.email)
+    .then((user) => {
+        console.log('user from index.js' + JSON.stringify(user));
+        dal.deposit(user[0], req.params.amount)
+         .then((user) => {
+            console.log(user);
+            res.send(user);
+         });
+    });
+})
+
+
+
+app.get('/account/withdraw/:email/:amount', function (req,res) {
+    dal.find(req.params.email)
+     .then((user) => {
+        console.log('user from index.js' + JSON.stringify(user));
+        dal.withdraw(user[0], req.params.amount)
+         .then((user) => {
+            console.log(user);
+            res.send(user);
+         });
+     });
+})
+
+app.get('/account/balance/:email/:amount', function (req, res) {
+    dal.deposit(req.params.email, req.params.amount)
+        .then((user) => {
+        console.log(user);
+        res.send(user);
+        });
+    });  
+
+
+
+app.get('/account/updateBalance/:email', function (req, res) {
+    dal.update(req.params.email)
+        .then((user) => {
+        console.log(user);
+        res.send(user);
+        });
+    });
+
+app.get('/account/all', function (req, res) {
+    dal.all()
+        .then((docs) => {
+            console.log(docs);
+            res.send(docs);
+        });
+});
+
+//var port = 3000;
+var port = process.env.PORT || 3001;
+app.listen(port);
+console.log('Running on port: ' + port);
+
